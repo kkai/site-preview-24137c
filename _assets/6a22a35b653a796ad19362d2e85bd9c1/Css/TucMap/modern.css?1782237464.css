@@ -1,0 +1,452 @@
+/*
+ * Modern look & feel overrides for TUC Campusmap.
+ * Loaded AFTER the vendored style.css; only overrides, no full restyle.
+ */
+
+:root {
+    --tucmap-accent: #008244;
+    --tucmap-accent-hover: #00a455;
+    --tucmap-accent-dark: #005530;
+    --tucmap-bg: #ffffff;
+    --tucmap-surface: #f8f9fa;
+    --tucmap-border: #e5e7eb;
+    --tucmap-text: #1f2937;
+    --tucmap-muted: #6b7280;
+    --tucmap-radius: 10px;
+    --tucmap-radius-sm: 6px;
+    --tucmap-shadow: 0 4px 16px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.06);
+    --tucmap-shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.14), 0 2px 6px rgba(15, 23, 42, 0.08);
+    --tucmap-transition: all .18s ease;
+}
+
+/* =========================================================
+   Map container
+   ========================================================= */
+.tuc-campusmap-wrapper .tuc-campusmap-box {
+    border-radius: var(--tucmap-radius);
+    overflow: hidden;
+    box-shadow: var(--tucmap-shadow);
+    border: 1px solid var(--tucmap-border);
+    background: var(--tucmap-bg);
+}
+
+.tuc-campusmap-wrapper .tuc-campusmap-map:focus {
+    outline: 2px solid var(--tucmap-accent);
+    outline-offset: -2px;
+}
+
+/* Mobile touch handling: let OpenLayers absorb pan/pinch gestures inside the
+   map area instead of the page eating them. Tapping markers fires `click`
+   reliably on iOS Safari when this is set. */
+.tuc-campusmap-wrapper .tuc-campusmap-map,
+.tuc-campusmap-wrapper .tuc-campusmap-map .ol-viewport,
+.tuc-campusmap-wrapper .tuc-campusmap-box {
+    touch-action: none;
+}
+
+/* =========================================================
+   Search input + button
+   ========================================================= */
+.tuc-campusmap-search-wrapper {
+    margin-top: .75rem;
+}
+
+/*
+ * Library appendet in #tx-tuc-campus-search nacheinander:
+ *   h2 (Titel), label (hidden), input, span (Spacer), button,
+ *   p (Hilfetext mit Link), span (Treffer-Container, leer bis zur Suche).
+ * Zusätzlich wird die Klasse .tuc-campusmap-results an den Container gehängt.
+ * Wir stylen deshalb NICHT den Container als Karte, sondern nur die Teile.
+ */
+#tx-tuc-campus-search,
+#tx-tuc-campus-search.tuc-campusmap-results {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+    width: 100%;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    font-size: 1rem;
+}
+
+/* Die erste Zeile (Input + Spacer + Button) soll auf 640 px begrenzt sein. */
+#tx-tuc-campus-search > .tuc-campusmap-searchtext {
+    max-width: 480px;
+}
+
+#tx-tuc-campus-search > h2 {
+    flex-basis: 100%;
+    margin: 0 0 .25rem 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--tucmap-accent-dark);
+}
+
+#tx-tuc-campus-search > p {
+    flex-basis: 100%;
+    margin: 0;
+    font-size: .88rem;
+    color: var(--tucmap-muted);
+}
+
+#tx-tuc-campus-search > p a {
+    color: var(--tucmap-accent);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+#tx-tuc-campus-search > p a:hover {
+    color: var(--tucmap-accent-dark);
+}
+
+.tuc-campusmap-searchtext {
+    flex: 1 1 260px;
+    min-width: 200px;
+    padding: .55rem .9rem;
+    font-size: 1rem;
+    line-height: 1.3;
+    color: var(--tucmap-text);
+    background: var(--tucmap-bg);
+    border: 1px solid var(--tucmap-border);
+    border-radius: var(--tucmap-radius-sm);
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, .04);
+    transition: var(--tucmap-transition);
+}
+
+.tuc-campusmap-searchtext:focus,
+.tuc-campusmap-searchtext:focus-visible {
+    outline: none;
+    border-color: var(--tucmap-accent);
+    box-shadow: 0 0 0 3px rgba(0, 130, 68, .18);
+}
+
+.tuc-campusmap-searchbutton,
+button.tuc-campusmap-searchbutton,
+a.tuc-campusmap-searchbutton,
+.tuc-campusmap-searchbutton:link,
+.tuc-campusmap-searchbutton:visited {
+    display: inline-block;
+    padding: .55rem 1.1rem;
+    font-size: .95rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #fff !important;
+    text-decoration: none !important;
+    background: var(--tucmap-accent);
+    border: 1px solid var(--tucmap-accent);
+    border-radius: var(--tucmap-radius-sm);
+    cursor: pointer;
+    transition: var(--tucmap-transition);
+}
+
+.tuc-campusmap-searchbutton:hover,
+.tuc-campusmap-searchbutton:focus-visible {
+    background: var(--tucmap-accent-hover) !important;
+    border-color: var(--tucmap-accent-hover);
+    color: #fff !important;
+    outline: none;
+}
+
+.tuc-campusmap-searchbutton:active {
+    background: var(--tucmap-accent-dark) !important;
+    border-color: var(--tucmap-accent-dark);
+}
+
+/* =========================================================
+   Search results
+   ========================================================= */
+/* =========================================================
+   Trefferliste (der letzte <span> im Container)
+   ========================================================= */
+#tx-tuc-campus-search > span:last-child:empty {
+    display: none;
+}
+
+#tx-tuc-campus-search > span:last-child:not(:empty) {
+    display: block;
+    flex-basis: 100%;
+    width: 100%;
+    margin-top: 1rem;
+    padding: 1rem 1.25rem 1.25rem;
+    background: var(--tucmap-bg);
+    border: 1px solid var(--tucmap-border);
+    border-radius: var(--tucmap-radius);
+    box-shadow: var(--tucmap-shadow);
+    font-size: .95rem;
+    line-height: 1.5;
+}
+
+/* Überschrift "Suchergebnisse" der Library deutlich zurückschrauben */
+#tx-tuc-campus-search > span:last-child h1,
+#tx-tuc-campus-search > span:last-child h2,
+#tx-tuc-campus-search > span:last-child h3 {
+    margin: 0 0 .5rem 0;
+    padding-bottom: .5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--tucmap-accent-dark);
+    border-bottom: 1px solid var(--tucmap-border);
+}
+
+#tx-tuc-campus-search > span:last-child > p {
+    margin: .25rem 0 .75rem 0;
+    color: var(--tucmap-muted);
+    font-size: .92rem;
+}
+
+#tx-tuc-campus-search > span:last-child > p b {
+    color: var(--tucmap-text);
+}
+
+/* Liste der Treffer */
+#tx-tuc-campus-search > span:last-child ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+#tx-tuc-campus-search > span:last-child li {
+    padding: .85rem 0;
+    border-top: 1px solid var(--tucmap-border);
+    list-style: none;
+}
+
+#tx-tuc-campus-search > span:last-child li:first-child {
+    border-top: 0;
+    padding-top: .25rem;
+}
+
+/* Treffer-Name (fett, dunkel) → klickbar wie ein Titel-Link */
+#tx-tuc-campus-search > span:last-child li > b:first-child,
+#tx-tuc-campus-search > span:last-child li > b:first-child a {
+    display: block;
+    font-size: 1.02rem;
+    font-weight: 600;
+    color: var(--tucmap-accent-dark);
+    margin-bottom: .35rem;
+}
+
+/* Bildvorschau rechts */
+#tx-tuc-campus-search > span:last-child img {
+    float: right;
+    max-width: 180px;
+    height: auto;
+    margin: 0 0 .75rem 1rem;
+    border-radius: var(--tucmap-radius-sm);
+    border: 1px solid var(--tucmap-border);
+}
+
+/* Navigations-Links in den Treffern → kleine Chips */
+#tx-tuc-campus-search > span:last-child a {
+    color: var(--tucmap-accent);
+    text-decoration: none;
+    border-bottom: 1px dotted transparent;
+    transition: var(--tucmap-transition);
+}
+
+#tx-tuc-campus-search > span:last-child a:hover,
+#tx-tuc-campus-search > span:last-child a:focus-visible {
+    color: var(--tucmap-accent-dark);
+    border-bottom-color: currentColor;
+    outline: none;
+}
+
+/* =========================================================
+   Popover (building info)
+   ========================================================= */
+.webui-popover {
+    border: 0;
+    border-radius: var(--tucmap-radius);
+    box-shadow: var(--tucmap-shadow-lg);
+    background: var(--tucmap-bg);
+    padding: 0;
+    overflow: hidden;
+}
+
+.webui-popover-inner {
+    border-radius: var(--tucmap-radius);
+}
+
+/* Title bar */
+.webui-popover-title,
+h3.webui-popover-title {
+    padding: .75rem 2.25rem .75rem 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #fff;
+    background: var(--tucmap-accent);
+    border-bottom: 0;
+    border-radius: 0;
+}
+
+/* Content */
+.webui-popover-content,
+.webui-popover .webui-popover-content {
+    padding: .9rem 1rem;
+    font-size: .92rem;
+    line-height: 1.45;
+    color: var(--tucmap-text);
+    background: var(--tucmap-bg);
+    max-height: none;
+    max-width: min(540px, 92vw);
+    overflow: visible;
+}
+
+/* Library setzt gerne max-height / overflow:auto auf das Popover selbst,
+   damit werden bei langer Trefferliste vorne Titel/Input/Hilfetext abgeschnitten.
+   Wir lassen es frei wachsen. */
+.webui-popover {
+    max-height: none;
+    max-width: min(580px, 94vw);
+}
+
+.webui-popover-content a {
+    color: var(--tucmap-accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: var(--tucmap-transition);
+}
+
+.webui-popover-content a:hover,
+.webui-popover-content a:focus-visible {
+    color: var(--tucmap-accent-dark);
+    border-bottom-color: currentColor;
+    outline: none;
+}
+
+/* Close button */
+.webui-popover-inner .close {
+    margin: 0;
+    top: .4rem;
+    right: .5rem;
+    position: absolute;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    line-height: 1;
+    color: #fff;
+    opacity: .85;
+    text-shadow: none;
+    border-radius: 50%;
+    transition: var(--tucmap-transition);
+}
+
+.webui-popover-inner .close:hover,
+.webui-popover-inner .close:focus {
+    opacity: 1;
+    background: rgba(255, 255, 255, .18);
+}
+
+.webui-popover-inner .close:after {
+    content: "×";
+    padding: 0;
+    width: auto;
+    height: auto;
+    position: static;
+}
+
+/* Arrow recolor to match title */
+.webui-popover.top > .webui-arrow:after,
+.webui-popover.top-left > .webui-arrow:after,
+.webui-popover.top-right > .webui-arrow:after {
+    border-top-color: var(--tucmap-bg);
+}
+
+/* =========================================================
+   OpenLayers controls (zoom, rotate, GPS, layer switcher)
+   ========================================================= */
+.ol-control {
+    background-color: rgba(255, 255, 255, .92);
+    border-radius: var(--tucmap-radius-sm);
+    padding: 3px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, .1);
+    transition: var(--tucmap-transition);
+}
+
+.ol-control:hover {
+    background-color: #fff;
+}
+
+.ol-control button {
+    margin: 1px;
+    background-color: var(--tucmap-accent);
+    border-radius: var(--tucmap-radius-sm);
+    height: 1.75em;
+    width: 1.75em;
+    line-height: 1.3em;
+    font-weight: 700;
+    color: #fff;
+    transition: var(--tucmap-transition);
+    border: 0;
+}
+
+.ol-control button:focus,
+.ol-control button:hover {
+    background-color: var(--tucmap-accent-hover);
+    color: #fff;
+}
+
+.ol-control button:active {
+    background-color: var(--tucmap-accent-dark);
+}
+
+/* Layer switcher panel */
+.layer-switcher .panel {
+    background-color: #fff;
+    color: var(--tucmap-text);
+    border: 1px solid var(--tucmap-border);
+    border-radius: var(--tucmap-radius-sm);
+    padding: .75rem 1rem .75rem .5rem;
+    box-shadow: var(--tucmap-shadow);
+    min-width: 220px;
+}
+
+.layer-switcher .panel ul {
+    padding-left: .25rem;
+}
+
+.layer-switcher li.group > label {
+    color: var(--tucmap-accent-dark);
+    font-weight: 600;
+    letter-spacing: .01em;
+    margin-bottom: .25rem;
+    display: inline-block;
+}
+
+.layer-switcher li.layer label {
+    font-size: .92rem;
+    color: var(--tucmap-text);
+    padding: .15rem 0;
+    cursor: pointer;
+}
+
+.layer-switcher input[type="checkbox"],
+.layer-switcher input[type="radio"] {
+    accent-color: var(--tucmap-accent);
+    margin: 3px 6px 3px 4px;
+}
+
+/* Zoom buttons corner radii */
+.ol-zoom .ol-zoom-in {
+    border-radius: var(--tucmap-radius-sm) var(--tucmap-radius-sm) 0 0;
+}
+
+.ol-zoom .ol-zoom-out {
+    border-radius: 0 0 var(--tucmap-radius-sm) var(--tucmap-radius-sm);
+}
+
+/* =========================================================
+   Info footer (mouse position)
+   ========================================================= */
+.tuc-campusmap-info {
+    font-size: .8rem;
+    color: var(--tucmap-muted);
+    padding: .25rem .5rem;
+}

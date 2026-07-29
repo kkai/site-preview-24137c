@@ -1,0 +1,11 @@
+import { Panels } from './Modules/Panels.js'
+import { Videos } from './Modules/Videos.js'
+import { Literature } from './Modules/Literature.js'
+
+document.addEventListener('DOMContentLoaded', function () {
+  if (document.querySelector('.tx_tucsolr')) {
+    new Panels().init()
+    new Literature().init()
+    new Videos().handleVideosButton()
+  }
+})

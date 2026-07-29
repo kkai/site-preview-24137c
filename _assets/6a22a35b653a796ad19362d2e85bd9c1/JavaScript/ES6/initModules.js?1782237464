@@ -1,0 +1,34 @@
+import { Cookieman } from './Modules/Cookieman.js'
+import { NavigationMain } from './Modules/NavigationMain.js'
+import { Accessibility } from './Modules/Accessibility.js'
+import { FontScaler } from './Modules/FontScaler.js'
+import { Print } from './Modules/Print.js'
+import { Carousel } from './Modules/Carousel.js';
+import { TucCarousel } from './Modules/TucCarousel.js';
+import { VideoConsent } from './Modules/VideoConsent.js';
+
+document.addEventListener('DOMContentLoaded', function () {
+  new NavigationMain().init()
+  new Cookieman().init()
+
+  if (document.getElementById('font-scaler')) {
+    new FontScaler().init()
+    new Print().init()
+  }
+
+  if (document.getElementById('accessibility-toggle')) {
+    new Accessibility().init()
+  }
+
+  if (document.querySelectorAll('.carousel')) {
+    new Carousel().init()
+  }
+
+  if (document.querySelectorAll('.tuc-carousel').length) {
+    new TucCarousel().init()
+  }
+
+  if (document.querySelector('[data-video-consent]')) {
+    new VideoConsent().init()
+  }
+})

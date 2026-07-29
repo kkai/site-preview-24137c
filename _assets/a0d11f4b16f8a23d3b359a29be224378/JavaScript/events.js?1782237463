@@ -1,0 +1,140 @@
+/* eslint-env jquery */
+
+let handlersRegistered = false
+
+// Get Dates for Month
+function getDates (viewDate = null) {
+  const queryString = window.location.search
+  const urlParams = new URLSearchParams(queryString)
+  const eventDate = urlParams.get('date')
+
+  if (!viewDate && eventDate) {
+    viewDate = eventDate
+  }
+
+  const startingpoint = document.getElementById('events-panel').dataset.startingpoint
+  $.ajax({
+    url: '/api/events/getMonthDates',
+    data: {
+      date: viewDate,
+      startingpoint
+    },
+    success: function (data) {
+      if (data) {
+        $('#events-panel .tuc-events__box').remove()
+        createEventpicker(data)
+        getEvents(data.monthStart)
+      }
+    }
+  })
+}
+
+// Get Events by Month
+function getEvents (date = null) {
+  if (date) {
+    document.getElementById('events-panel').dataset.currentdate = date
+  }
+  const itemsPerPage = document.getElementById('events-panel').dataset.itemsperpage
+  const currentPage = document.getElementById('events-panel').dataset.currentpage
+  const detailPid = document.getElementById('events-panel').dataset.detailpid
+  const startingpoint = document.getElementById('events-panel').dataset.startingpoint
+  if (document.getElementById('events-panel').dataset.currentdate) {
+    date = document.getElementById('events-panel').dataset.currentdate
+  }
+  $.ajax({
+    url: '/api/events/getMonthEvents',
+    data: {
+      date,
+      itemsPerPage,
+      currentPage,
+      detailPid,
+      startingpoint
+    },
+    success: function (data) {
+      if (data) {
+        // resets
+        $('#events-panel .tuc-events__box').remove()
+        $('#events-panel .f3-widget-paginator').remove()
+        document.getElementById('events-panel').dataset.currentpage = 1
+
+        document.getElementById('events-panel').insertAdjacentHTML('beforeend', data.content)
+
+        // Create Pagination
+        if (data.pagination) {
+          const pagination = document.createElement('ul')
+          pagination.classList.add('f3-widget-paginator')
+
+          data.pagination.forEach(page => {
+            const pageBtn = document.createElement('li')
+            if (page.current) {
+              pageBtn.classList.add('current')
+            }
+            pageBtn.dataset.page = page.number
+            pageBtn.dataset.offset = page.offset
+            pageBtn.appendChild(document.createTextNode(page.number))
+            pageBtn.addEventListener('click', (event) => {
+              document.getElementById('events-panel').dataset.currentpage = page.number
+              getEvents()
+            })
+
+            pagination.appendChild(pageBtn)
+          })
+
+          document.getElementById('events-panel').appendChild(pagination)
+        }
+      } else {
+        $('#events-panel .tuc-events__box').remove()
+      }
+    }
+  })
+}
+
+// Crate Datepicker
+function createEventpicker (data = []) {
+  $('#event-picker').datepicker({
+    format: 'yyyy-mm-dd',
+    // startDate: data['monthStart'],
+    defaultViewDate: data.monthStart,
+    language: 'de',
+    beforeShowDay: function (date) {
+      let title = null
+      if (data.days) {
+        data.days.forEach(function (event) {
+          const eventDate = new Date(event.date)
+          if (eventDate.setHours(0, 0, 0, 0) === date.setHours(0, 0, 0, 0)) {
+            title = event.title
+          }
+        })
+      }
+
+      if (title) {
+        return {
+          classes: 'highlight',
+          tooltip: title,
+          enabled: true
+        }
+      } else {
+        return false
+      }
+    }
+  })
+
+  if (!handlersRegistered) {
+    handlersRegistered = true
+    $('#event-picker')
+      .on('changeDate', function (e) {
+        const d = new Date(e.date)
+        const minDate = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()
+        getEvents(minDate)
+      }).on('changeMonth', function (e) {
+        $('#event-picker').datepicker('destroy')
+        const d = new Date(e.date)
+        const minDate = d.getFullYear() + '-' + (d.getMonth() + 1) + '-01'
+        getDates(minDate)
+      })
+  }
+}
+
+$(document).ready(function () {
+  getDates()
+})
